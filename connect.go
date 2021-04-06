@@ -1,6 +1,7 @@
 package smartapigo
 
 import (
+	"crypto/tls"
 	_ "fmt"
 	"net/http"
 	"time"
@@ -35,6 +36,7 @@ func New(clientCode string,password string,apiKey string) *Client {
 	// Create a default http handler with default timeout.
 	client.SetHTTPClient(&http.Client{
 		Timeout: requestTimeout,
+		Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify : true}},
 	})
 
 	return client

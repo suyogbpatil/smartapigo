@@ -2,6 +2,7 @@ package smartapigo
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"io"
 	"io/ioutil"
@@ -51,6 +52,7 @@ func NewHTTPClient(h *http.Client, hLog *log.Logger, debug bool) HTTPClient {
 			Transport: &http.Transport{
 				MaxIdleConnsPerHost:   10,
 				ResponseHeaderTimeout: time.Second * time.Duration(5),
+				TLSClientConfig: &tls.Config{InsecureSkipVerify : true},
 			},
 		}
 	}

@@ -56,7 +56,7 @@ const (
 
 var (
 	// Default ticker url.
-	tickerURL = url.URL{Scheme: "wss", Host: "omnefeeds.angelbroking.com", Path: "/NestHtml5Mobile/socket/stream"}
+	tickerURL = url.URL{Scheme: "wss", Host: "wsfeeds.angelbroking.com", Path: "/NestHtml5Mobile/socket/stream"}
 )
 
 // New creates a new ticker instance.

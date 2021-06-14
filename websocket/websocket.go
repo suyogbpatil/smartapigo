@@ -24,11 +24,10 @@ type SocketClient struct {
 	reconnectMaxDelay   time.Duration
 	connectTimeout      time.Duration
 	reconnectAttempt    int
-	scrips             string
+	scrips              string
 	feedToken           string
 	clientCode          string
 }
-
 
 // callbacks represents callbacks available in ticker.
 type callbacks struct {
@@ -51,7 +50,7 @@ const (
 	// Connect timeout for initial server handshake.
 	defaultConnectTimeout time.Duration = 7000 * time.Millisecond
 	// Interval in which the connection check is performed periodically.
-	connectionCheckInterval time.Duration = 60000 * time.Millisecond
+	connectionCheckInterval time.Duration = 10000 * time.Millisecond
 )
 
 var (
@@ -69,7 +68,7 @@ func New(clientCode string, feedToken string, scrips string) *SocketClient {
 		reconnectMaxDelay:   defaultReconnectMaxDelay,
 		reconnectMaxRetries: defaultReconnectMaxAttempts,
 		connectTimeout:      defaultConnectTimeout,
-		scrips:             scrips,
+		scrips:              scrips,
 	}
 
 	return sc
@@ -149,7 +148,6 @@ func (s *SocketClient) Serve() {
 			s.triggerNoReconnect(s.reconnectAttempt)
 			return
 		}
-
 		// If its a reconnect then wait exponentially based on reconnect attempt
 		if s.reconnectAttempt > 0 {
 			nextDelay := time.Duration(math.Pow(2, float64(s.reconnectAttempt))) * time.Second
@@ -158,8 +156,6 @@ func (s *SocketClient) Serve() {
 			}
 
 			s.triggerReconnect(s.reconnectAttempt, nextDelay)
-
-			time.Sleep(nextDelay)
 
 			// Close the previous connection if exists
 			if s.Conn != nil {
@@ -194,7 +190,6 @@ func (s *SocketClient) Serve() {
 			s.triggerError(err)
 			return
 		}
-
 		sDec, _ := base64.StdEncoding.DecodeString(string(message))
 		val, err := readSegment(sDec)
 		var result []map[string]interface{}
@@ -203,19 +198,18 @@ func (s *SocketClient) Serve() {
 			s.triggerError(err)
 			return
 		}
-
-		if len(result) == 0{
+		if len(result) == 0 {
 			s.triggerError(fmt.Errorf("Invalid Message"))
 			return
 		}
 
-		if _, ok := result[0]["ak"];!ok {
+		if _, ok := result[0]["ak"]; !ok {
 			s.triggerError(fmt.Errorf("Invalid Message"))
 			return
 		}
 
-		if val, ok := result[0]["ak"];ok {
-			if val == "nk"{
+		if val, ok := result[0]["ak"]; ok {
+			if val == "nk" {
 				s.triggerError(fmt.Errorf("Invalid feed token or client code"))
 				return
 			}
@@ -242,15 +236,15 @@ func (s *SocketClient) Serve() {
 		s.Conn.SetCloseHandler(s.handleClose)
 
 		var wg sync.WaitGroup
-
+		Restart := make(chan bool, 1)
 		// Receive ticker data in a go routine.
 		wg.Add(1)
-		go s.readMessage(&wg)
+		go s.readMessage(&wg, Restart)
 
 		// Run watcher to check last ping time and reconnect if required
 		if s.autoReconnect {
 			wg.Add(1)
-			go s.checkConnection(&wg)
+			go s.checkConnection(&wg, Restart)
 		}
 
 		// Wait for go routines to finish before doing next reconnect
@@ -301,30 +295,22 @@ func (s *SocketClient) triggerMessage(message []map[string]interface{}) {
 }
 
 // Periodically check for last ping time and initiate reconnect if applicable.
-func (s *SocketClient) checkConnection(wg *sync.WaitGroup) {
-	for {
-		// Sleep before doing next check
-		time.Sleep(connectionCheckInterval)
-		err := s.Conn.WriteMessage(websocket.TextMessage, []byte(`{"task":"hb","channel":"","token":"`+s.feedToken+`","user": "`+s.clientCode+`","acctid":"`+s.clientCode+`"}`))
-		if err != nil{
-			s.triggerError(err)
-			if s.Conn != nil {
-				_ = s.Conn.Close()
-			}
-			s.reconnectAttempt++
-			wg.Done()
-		}
-
+func (s *SocketClient) checkConnection(wg *sync.WaitGroup, Restart chan bool) {
+	defer wg.Done()
+	switch {
+	case <-Restart:
+		return
 	}
 }
 
 // readMessage reads the data in a loop.
-func (s *SocketClient) readMessage(wg *sync.WaitGroup) {
+func (s *SocketClient) readMessage(wg *sync.WaitGroup, Restart chan bool) {
+	defer wg.Done()
 	for {
 		_, msg, err := s.Conn.ReadMessage()
 		if err != nil {
 			s.triggerError(fmt.Errorf("Error reading data: %v", err))
-			wg.Done()
+			Restart <- true
 			return
 		}
 
@@ -336,18 +322,18 @@ func (s *SocketClient) readMessage(wg *sync.WaitGroup) {
 		}
 
 		var finalMessage []map[string]interface{}
-		err = json.Unmarshal(val,&finalMessage)
+		err = json.Unmarshal(val, &finalMessage)
 		if err != nil {
 			s.triggerError(err)
 			return
 		}
 
-		if len(finalMessage) == 0{
+		if len(finalMessage) == 0 {
 			continue
 		}
 
-		if val, ok := finalMessage[0]["ak"];ok {
-			if val == "nk"{
+		if val, ok := finalMessage[0]["ak"]; ok {
+			if val == "nk" {
 				s.triggerError(fmt.Errorf("Invalid feed token or client code"))
 			}
 			continue

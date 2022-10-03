@@ -1,4 +1,4 @@
-module github.com/angelbroking-github/smartapigo
+module github.com/angel-one/smartapigo
 
 go 1.14
 

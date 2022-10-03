@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	SmartApi "github.com/angelbroking-github/smartapigo"
-	"github.com/angelbroking-github/smartapigo/websocket"
+	SmartApi "github.com/angel-one/smartapigo"
+	"github.com/angel-one/smartapigo/websocket"
 	"time"
 )
 
@@ -29,8 +29,8 @@ func onConnect() {
 }
 
 // Triggered when a message is received
-func onMessage(message []map[string]interface{})  {
-	fmt.Printf("Message Received :- %v\n",message)
+func onMessage(message []map[string]interface{}) {
+	fmt.Printf("Message Received :- %v\n", message)
 }
 
 // Triggered when reconnection is attempted which is enabled by default
@@ -46,7 +46,7 @@ func onNoReconnect(attempt int) {
 func main() {
 
 	// Create New Angel Broking Client
-	ABClient := SmartApi.New("Your Client Code", "Your Password","Your api key")
+	ABClient := SmartApi.New("Your Client Code", "Your Password", "Your api key")
 
 	// User Login and Generate User Session
 	session, err := ABClient.GenerateSession()
@@ -65,7 +65,7 @@ func main() {
 	}
 
 	// New Websocket Client
-	socketClient = websocket.New(session.ClientCode,session.FeedToken,"nse_cm|17963&nse_cm|3499&nse_cm|11536&nse_cm|21808&nse_cm|317")
+	socketClient = websocket.New(session.ClientCode, session.FeedToken, "nse_cm|17963&nse_cm|3499&nse_cm|11536&nse_cm|21808&nse_cm|317")
 
 	// Assign callbacks
 	socketClient.OnError(onError)

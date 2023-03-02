@@ -21,7 +21,7 @@ func TestNewClient(t *testing.T) {
 	clientcode := "test"
 	password := "test@444"
 	apiKey := "test_key"
-	client := New(clientcode,password,apiKey)
+	client := New(clientcode, password, apiKey)
 
 	if client.password != password || client.clientCode != clientcode {
 		t.Errorf("Credentials not assigned properly.")
@@ -35,7 +35,7 @@ func TestClientSetters(t *testing.T) {
 	clientcode := "test"
 	password := "test@444"
 	apiKey := "test_key"
-	client := New(clientcode,password,apiKey)
+	client := New(clientcode, password, apiKey)
 
 	customDebug := true
 	customBaseURI := "test"
@@ -110,24 +110,23 @@ var MockResponders = [][]string{
 	// Array of [<httpMethod>, <url>, <file_name>]
 
 	// GET endpoints
-	[]string{http.MethodGet, URIUserProfile, "profile.json"},
-	[]string{http.MethodGet, URIGetPositions, "positions.json"},
-	[]string{http.MethodGet, URIGetHoldings, "holdings.json"},
-	[]string{http.MethodGet, URIRMS, "rms.json"},
-	[]string{http.MethodGet, URIGetTradeBook, "trades.json"},
-	[]string{http.MethodGet, URIGetOrderBook, "orders.json"},
+	{http.MethodGet, URIUserProfile, "profile.json"},
+	{http.MethodGet, URIGetPositions, "positions.json"},
+	{http.MethodGet, URIGetHoldings, "holdings.json"},
+	{http.MethodGet, URIRMS, "rms.json"},
+	{http.MethodGet, URIGetTradeBook, "trades.json"},
+	{http.MethodGet, URIGetOrderBook, "orders.json"},
 
 	// POST endpoints
-	[]string{http.MethodPost, URIModifyOrder, "order_response.json"},
-	[]string{http.MethodPost, URIPlaceOrder, "order_response.json"},
-	[]string{http.MethodPost, URICancelOrder, "order_response.json"},
-	[]string{http.MethodPost, URILTP, "ltp.json"},
-	[]string{http.MethodPost, URILogin, "session.json"},
-	[]string{http.MethodPost, URIUserSessionRenew, "session.json"},
-	[]string{http.MethodPost, URIUserProfile, "profile.json"},
-	[]string{http.MethodPost, URILogout, "logout.json"},
-	[]string{http.MethodPost, URIConvertPosition, "position_conversion.json"},
-
+	{http.MethodPost, URIModifyOrder, "order_response.json"},
+	{http.MethodPost, URIPlaceOrder, "order_response.json"},
+	{http.MethodPost, URICancelOrder, "order_response.json"},
+	{http.MethodPost, URILTP, "ltp.json"},
+	{http.MethodPost, URILogin, "session.json"},
+	{http.MethodPost, URIUserSessionRenew, "session.json"},
+	{http.MethodPost, URIUserProfile, "profile.json"},
+	{http.MethodPost, URILogout, "logout.json"},
+	{http.MethodPost, URIConvertPosition, "position_conversion.json"},
 }
 
 // Test only function prefix with this
@@ -144,7 +143,7 @@ func (ts *TestSuite) SetupAPITestSuit() {
 	clientcode := "test"
 	password := "test@444"
 	apiKey := "test_key"
-	ts.TestConnect = New(clientcode,password,apiKey)
+	ts.TestConnect = New(clientcode, password, apiKey)
 	httpmock.ActivateNonDefault(ts.TestConnect.httpClient.GetClient().client)
 
 	for _, v := range MockResponders {
@@ -185,12 +184,12 @@ func (ts *TestSuite) TearDownAPITest() {}
 
 /*
 Run sets up the suite, runs its test cases and tears it down:
-    1. Calls `ts.SetUpSuite`
-    2. Seeks for any methods that have `Test` prefix, for each of them it:
-      a. Calls `SetUp`
-      b. Calls the test method itself
-      c. Calls `TearDown`
-    3. Calls `ts.TearDownSuite`
+ 1. Calls `ts.SetUpSuite`
+ 2. Seeks for any methods that have `Test` prefix, for each of them it:
+    a. Calls `SetUp`
+    b. Calls the test method itself
+    c. Calls `TearDown`
+ 3. Calls `ts.TearDownSuite`
 */
 func RunAPITests(t *testing.T, ts *TestSuite) {
 	ts.SetupAPITestSuit()
@@ -214,4 +213,3 @@ func TestAPIMethods(t *testing.T) {
 	s := &TestSuite{}
 	RunAPITests(t, s)
 }
-

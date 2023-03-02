@@ -1,12 +1,12 @@
 package smartapigo
 
 import (
-"testing"
+	"testing"
 )
 
 func (ts *TestSuite) TestGenerateSession(t *testing.T) {
 	t.Parallel()
-	session, err := ts.TestConnect.GenerateSession()
+	session, err := ts.TestConnect.GenerateSession("totp")
 	if err != nil {
 		t.Errorf("Error while generating session. %v", err)
 	}
@@ -55,4 +55,3 @@ func (ts *TestSuite) TestLogout(t *testing.T) {
 	}
 
 }
-

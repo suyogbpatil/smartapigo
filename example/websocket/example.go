@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"time"
+
 	SmartApi "github.com/angel-one/smartapigo"
 	"github.com/angel-one/smartapigo/websocket"
-	"time"
 )
 
 var socketClient *websocket.SocketClient
@@ -49,7 +50,7 @@ func main() {
 	ABClient := SmartApi.New("Your Client Code", "Your Password", "Your api key")
 
 	// User Login and Generate User Session
-	session, err := ABClient.GenerateSession()
+	session, err := ABClient.GenerateSession("totp")
 
 	if err != nil {
 		fmt.Println(err.Error())

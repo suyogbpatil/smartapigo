@@ -2,7 +2,7 @@ package smartapigo
 
 import (
 	"errors"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"reflect"
@@ -30,6 +30,8 @@ const (
 	URILTP              string = "rest/secure/angelbroking/order/v1/getLtpData"
 	URIRMS              string = "rest/secure/angelbroking/user/v1/getRMS"
 	URIConvertPosition  string = "rest/secure/angelbroking/order/v1/convertPosition"
+	URIGetCandleData    string = "rest/secure/angelbroking/historical/v1/getCandleData"
+	URIGetIntruments    string = "https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json"
 )
 
 func structToMap(obj interface{}, tagName string) map[string]interface{} {
@@ -54,6 +56,11 @@ func structToMap(obj interface{}, tagName string) map[string]interface{} {
 	case ConvertPositionParams:
 		{
 			con := obj.(ConvertPositionParams)
+			values = reflect.ValueOf(&con).Elem()
+		}
+	case CandleDataParams:
+		{
+			con := obj.(CandleDataParams)
 			values = reflect.ValueOf(&con).Elem()
 		}
 	}
@@ -166,7 +173,7 @@ func getPublicIp() (string, error) {
 		return "", err
 	}
 
-	content, _ := ioutil.ReadAll(resp.Body)
+	content, _ := io.ReadAll(resp.Body)
 	err = resp.Body.Close()
 	if err != nil {
 		return "", err

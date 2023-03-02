@@ -71,7 +71,7 @@ func (c *Client) DownloadSymbols() error {
 
 func FindInstrument(symbol, exchange string) (*Instrument, error) {
 
-	jsonFile, err := os.Open("instrumetns.json")
+	jsonFile, err := os.Open("instruments.json")
 	if err != nil {
 		return nil, err
 	}

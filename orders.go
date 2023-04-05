@@ -55,6 +55,7 @@ type OrderParams struct {
 	ProductType     string `json:"producttype"`
 	Duration        string `json:"duration"`
 	Price           string `json:"price"`
+	TriggerPrice    string `json:"triggerprice"`
 	SquareOff       string `json:"squareoff"`
 	StopLoss        string `json:"stoploss"`
 	Quantity        string `json:"quantity"`

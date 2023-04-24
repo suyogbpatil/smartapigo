@@ -24,7 +24,7 @@ type Instrument struct {
 
 var Instruments []Instrument
 
-func (c *Client) DownloadSymbols() error {
+func DownloadSymbols() error {
 
 	now := time.Now()
 	checkTime := time.Date(now.Year(), now.Month(), now.Day(), 8, 30, 00, 00, now.Location())

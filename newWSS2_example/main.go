@@ -1,3 +1,0 @@
-package newwss2example
-
-

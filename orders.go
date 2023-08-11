@@ -69,6 +69,7 @@ type ModifyOrderParams struct {
 	ProductType   string `json:"producttype"`
 	Duration      string `json:"duration"`
 	Price         string `json:"price"`
+	TriggerPrice  string `json:"triggerprice"`
 	Quantity      string `json:"quantity"`
 	TradingSymbol string `json:"tradingsymbol"`
 	SymbolToken   string `json:"symboltoken"`
